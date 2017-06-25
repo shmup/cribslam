@@ -10,4 +10,4 @@ todo:
 
 - everything
 
-![screenshot](http://i.imgur.com/8Cmjg7K.png)
+![screenshot](http://i.imgur.com/B5fZm5k.png)
