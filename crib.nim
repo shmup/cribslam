@@ -26,10 +26,25 @@ proc newHand(): Hand =
   cards[0..4]
 
 proc reset() =
+  cls()
   points = 0
   hand = newHand()
-
   fifteens = findFifteens(hand).len * 2
+
+proc drawCards() =
+  # draw cards
+  for c in 0..hand.len-1:
+    hand[c].location.y = 100
+    hand[c].location.x = 18*(c+1)
+    hand[c].draw()
+
+  # draw deck art
+  drawDeck()
+
+proc drawScores() =
+  # draw fifteens
+  setColor(1)
+  print("15: " & $fifteens, 2, 2)
 
 proc gameInit() =
   loadSpriteSheet("sprites.png")
@@ -43,19 +58,8 @@ proc gameUpdate(dt: float) =
 proc gameDraw() =
   cls()
   cursorfill()
-
-  # draw cards
-  for c in 0..hand.len-1:
-    hand[c].location.y = 100
-    hand[c].location.x = 18*(c+1)
-    hand[c].draw()
-
-  # draw deck art
-  drawDeck()
-
-  # draw fifteens
-  setColor(1)
-  print("15: " & $fifteens, 2, 2)
+  drawCards()
+  drawScores()
 
 nico.init("shmup", "cribslam")
 nico.loadPaletteCGA()
