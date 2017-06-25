@@ -1,8 +1,8 @@
 import nico
-import cursor
-import card
+import libs/cursor
+import libs/card
+import libs/score
 import random
-import score
 
 let
   width, height = 128
