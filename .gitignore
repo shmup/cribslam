@@ -3,3 +3,5 @@ cribslam
 nimcache
 .vscode
 *.exe
+*.ilk
+*.pdb

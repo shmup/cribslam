@@ -3,37 +3,42 @@ import libs/cursor
 import libs/card
 import libs/score
 import random
+import sets
+import algorithm
+import seqUtils
 
 let
   width, height = 128
-  scale = 2
+  scale = 4
 
 var
   cards: seq[Card]
   hand: Hand
-  points: int
   fifteens, pairs, flush, runs, knobs, total: int
+  clickTimer = 0.0
 
 proc newHand(): Hand =
   cards = newSeq[Card]()
-  points = 0
 
   for s in Suit:
     for v in 1..13:
       cards.add(Card(suit: Suit(s), heirarchy: v, value: if v > 10: 10 else: v))
   shuffle(cards)
 
-  cards[0..4]
+  cards[0..4].sortedByIt(it.heirarchy)
 
-proc reset() =
-  cls()
-  points = 0
-  hand = newHand()
+proc scoreHand() =
   fifteens = findFifteens(hand).len * 2
   pairs = findPairs(hand).len * 2
+  runs = findRuns(hand)
   flush = if isFlush(hand): 5 else: 0
   knobs = if isKnobs(hand): 1 else: 0
   total = fifteens + flush + pairs + runs + knobs
+
+proc reset() =
+  cls()
+  hand = newHand()
+  scoreHand()
 
 proc drawCards() =
   # draw cards
@@ -62,9 +67,12 @@ proc gameInit() =
   reset()
 
 proc gameUpdate(dt: float) =
+  clickTimer += dt
+
   # check for clicks
-  if mousebtn(0):
+  if mousebtn(0) and clickTimer > 0.2:
     reset()
+    clickTimer = 0
 
 proc gameDraw() =
   cls()
