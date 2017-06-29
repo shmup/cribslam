@@ -2,6 +2,7 @@ import nico
 import libs/cursor
 import libs/card
 import libs/score
+import libs/button
 import random
 import sets
 import algorithm
@@ -13,9 +14,11 @@ let
 
 var
   cards: seq[Card]
+  buttons: seq[Button]
   hand: Hand
   fifteens, pairs, flush, runs, knobs, total: int
   clickTimer = 0.0
+  showHelp = false
 
 proc newHand(): Hand =
   cards = newSeq[Card]()
@@ -33,9 +36,11 @@ proc scoreHand() =
   runs = findRuns(hand)
   flush = if isFlush(hand): 5 else: 0
   knobs = if isKnobs(hand): 1 else: 0
-  total = fifteens + flush + pairs + runs + knobs
+  let tempTotal = fifteens + flush + pairs + runs + knobs
+  total = if tempTotal > 0: tempTotal else: 19
 
-proc reset() =
+proc reset*() =
+  # discard()
   cls()
   hand = newHand()
   scoreHand()
@@ -62,23 +67,39 @@ proc drawScores() =
   setColor(2)
   print("   total: " & $total, x, 32)
 
+proc help() =
+  showHelp = not showHelp
+
 proc gameInit() =
   loadSpriteSheet("sprites.png")
   reset()
 
+  buttons = newSeq[Button]()
+  buttons.add(newButton(3, 3, "HELP", help))
+  buttons.add(newButton(3, 12, "DEAL", reset))
+
 proc gameUpdate(dt: float) =
   clickTimer += dt
 
-  # check for clicks
   if mousebtn(0) and clickTimer > 0.2:
-    reset()
+    let x = mouse()[0]
+    let y = mouse()[1]
+    for btn in buttons:
+      if btn.buttoncollide(x, y):
+        btn.fire()
     clickTimer = 0
 
 proc gameDraw() =
   cls()
-  cursorfill()
   drawCards()
-  drawScores()
+  if showHelp:
+    drawScores()
+
+  for btn in buttons:
+    btn.buttonfill()
+
+  # always on top
+  cursorfill()
 
 nico.init("shmup", "cribslam")
 nico.loadPaletteCGA()
